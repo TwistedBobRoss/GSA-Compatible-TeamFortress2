@@ -14,7 +14,7 @@ The blueprint is intended for the `GSA + Steam (Windows only)` template. It uses
 
 ## What Was Fixed
 
-- Added `_version: 3` and `type: custom` at the root so the file matches the other GSA custom import packages.
+- Removed the root-level `type: custom` import marker so GSA does not route this blueprint through the custom launch-script path.
 - Normalized the Docker mount source to `{container.home_root}/serverfiles` and the container target to `C:/Users/ContainerUser/serverfiles`.
 - Set the official GSA container user to `containeruser`, matching GameServerApp's blueprint guidance.
 - Uses the native `GSA + Steam` blueprint flow for Steam app `232250`; the JSON does not embed a custom SteamCMD script.

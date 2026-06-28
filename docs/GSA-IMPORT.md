@@ -45,4 +45,4 @@ The blueprint lets GSA + Steam install app `232250` and launch SRCDS with:
 -game tf -console -norestart -usercon -strictportbind -condebug -port {gameserver.game_port} +map {config_parameter id="start_map"} +maxplayers {gameserver.slot_limit} +exec server.cfg
 ```
 
-The submitted JSON intentionally does not include a custom `gsa-control.ps1`, SteamCMD install/update commands, web-download commands, archive extraction, or external installer URLs.
+The submitted JSON intentionally does not include a root-level `type: custom` marker, a custom `gsa-control.ps1`, SteamCMD install/update commands, web-download commands, archive extraction, or external installer URLs.

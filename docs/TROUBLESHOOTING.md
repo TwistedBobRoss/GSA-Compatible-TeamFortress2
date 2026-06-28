@@ -7,7 +7,7 @@ Check the Docker container log first. Then check:
 - `\serverfiles\tf\console.log`
 - `\serverfiles\tf\logs`
 
-If the log says `C:\Users\ContainerUser\serverfiles\gsa-control.ps1` is not recognized, the server is not using the native GSA + Steam launch flow for this blueprint version. Confirm the blueprint version was created from `GSA + Steam (Windows only)`, activate that version on the server's config template, and reinstall the server.
+If the log says `C:\Users\ContainerUser\serverfiles\gsa-control.ps1` is not recognized, the server is not using the native GSA + Steam launch flow for this blueprint version. Confirm the blueprint version was created from `GSA + Steam (Windows only)`, not `Import Custom Docker container`, and clear any Config template `Special settings` custom launch script. Then activate that blueprint version on the server's config template and reinstall the server.
 
 If the log says `srcds.exe` cannot be found, the Steam app `232250` did not finish installing or the server files mount is wrong. This blueprint mounts GSA storage at:
 

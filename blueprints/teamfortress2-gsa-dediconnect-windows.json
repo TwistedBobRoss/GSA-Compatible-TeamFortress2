@@ -1,6 +1,5 @@
 {
   "_version": 3,
-  "type": "custom",
   "docker": {
     "image": {
       "name": "gameserverapp/dediconnect-windows",
