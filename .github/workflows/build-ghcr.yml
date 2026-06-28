@@ -32,9 +32,34 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Show Docker runtime
+      - name: Start Docker runtime
         shell: powershell
         run: |
+          $ErrorActionPreference = "Stop"
+
+          $dockerService = Get-Service -Name docker -ErrorAction SilentlyContinue
+          if (-not $dockerService) {
+            throw "The Docker service is not installed on this runner."
+          }
+
+          if ($dockerService.Status -ne "Running") {
+            Start-Service -Name docker
+          }
+
+          $deadline = (Get-Date).AddMinutes(2)
+          do {
+            try {
+              docker info
+              break
+            }
+            catch {
+              if ((Get-Date) -ge $deadline) {
+                throw
+              }
+              Start-Sleep -Seconds 5
+            }
+          } while ($true)
+
           docker version
           docker info
 
