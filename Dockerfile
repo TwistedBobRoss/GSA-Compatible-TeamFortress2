@@ -22,7 +22,14 @@ RUN $ErrorActionPreference = 'Stop'; `
     Invoke-WebRequest -Uri $env:STEAMCMD_URL -OutFile C:/temp/steamcmd.zip -UseBasicParsing; `
     Expand-Archive -LiteralPath C:/temp/steamcmd.zip -DestinationPath C:/steamcmd -Force; `
     & C:/steamcmd/steamcmd.exe +quit; `
-    if ($LASTEXITCODE -ne 0) { throw ('SteamCMD bootstrap failed with exit code {0}' -f $LASTEXITCODE) }; `
+    $steamExitCode = $LASTEXITCODE; `
+    if ($steamExitCode -eq 7) { `
+        Write-Host 'SteamCMD returned exit code 7 after self-update; retrying bootstrap once.'; `
+        Start-Sleep -Seconds 5; `
+        & C:/steamcmd/steamcmd.exe +quit; `
+        $steamExitCode = $LASTEXITCODE `
+    }; `
+    if ($steamExitCode -ne 0) { throw ('SteamCMD bootstrap failed with exit code {0}' -f $steamExitCode) }; `
     Remove-Item C:/temp -Recurse -Force
 
 COPY Start.ps1 C:/tf2/Start.ps1
