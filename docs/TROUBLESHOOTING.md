@@ -7,6 +7,8 @@ Check the Docker container log first. Then check:
 - `\serverfiles\tf\console.log`
 - `\serverfiles\tf\logs`
 
+If the log says `C:\Users\ContainerUser\serverfiles\gsa-control.ps1` is not recognized, the imported blueprint did not create the DediConnect startup script. Re-import the current blueprint version; it includes `\serverfiles\gsa-control.ps1`.
+
 If the log says `srcds.exe` cannot be found, SteamCMD did not finish installing app `232250` or the server files mount is wrong. This blueprint mounts GSA storage at:
 
 ```text
