@@ -1,6 +1,6 @@
 # GameServerApp Import Guide
 
-Import this file as a custom Docker blueprint:
+Use this file with a GameServerApp `GSA + Steam (Windows only)` blueprint version:
 
 ```text
 blueprints/teamfortress2-gsa-dediconnect-windows.json
@@ -12,8 +12,6 @@ blueprints/teamfortress2-gsa-dediconnect-windows.json
 | --- | --- | --- |
 | `start_map` | `pl_upward` | Use a valid TF2 map name without `.bsp`. |
 | `steam_gslt` | Your TF2 GSLT | Recommended for public listing. Create the token for App ID `440`. |
-| `update_on_start` | `1` | Runs the image-provided SteamCMD update step before launch. Keep enabled for first boot. |
-| `validate_on_update` | `0` | Enable only when repairing files because it slows startup. |
 | `sv_lan` | `0` | Keep off for an internet-accessible server. |
 | `server_password` | Blank | Leave blank for a public server. |
 
@@ -30,15 +28,14 @@ The blueprint registers:
 
 ## First Boot
 
-The first start can take several minutes while SteamCMD prepares the Team Fortress 2 Dedicated Server files.
+The first start can take several minutes while GSA + Steam prepares the Team Fortress 2 Dedicated Server files.
 
 Recommended first checks:
 
-1. Watch the Docker container log for SteamCMD install progress.
-2. Confirm `gsa-control.ps1` exists under `\serverfiles`.
-3. Confirm `srcds.exe` exists under `\serverfiles` after installation.
-4. Confirm `server.cfg`, `mapcycle.txt`, `motd.txt`, and `motd_text.txt` exist under `\serverfiles\tf\cfg`.
-5. Confirm the server reaches the configured start map instead of exiting immediately.
+1. Watch the Docker container log for GSA + Steam install progress.
+2. Confirm `srcds.exe` exists under `\serverfiles` after installation.
+3. Confirm `server.cfg`, `mapcycle.txt`, `motd.txt`, and `motd_text.txt` exist under `\serverfiles\tf\cfg`.
+4. Confirm the server reaches the configured start map instead of exiting immediately.
 
 ## Startup Command
 
@@ -48,6 +45,4 @@ The blueprint launches SRCDS with:
 -game tf -console -norestart -usercon -strictportbind -condebug -port {gameserver.game_port} +map {config_parameter id="start_map"} +maxplayers {gameserver.slot_limit} +exec server.cfg
 ```
 
-`gsa-control.ps1` builds this startup command at runtime and only adds `+sv_setsteamaccount` when a token is configured.
-
-Before launching SRCDS, `gsa-control.ps1` uses SteamCMD from the DediConnect image to install or update Steam app `232250`. It does not download SteamCMD itself.
+The blueprint intentionally does not include a custom `gsa-control.ps1` install script. GSA + Steam should generate/manage the Steam install and launch flow.

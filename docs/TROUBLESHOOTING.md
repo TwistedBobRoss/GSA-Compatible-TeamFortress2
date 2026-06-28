@@ -7,9 +7,9 @@ Check the Docker container log first. Then check:
 - `\serverfiles\tf\console.log`
 - `\serverfiles\tf\logs`
 
-If the log says `C:\Users\ContainerUser\serverfiles\gsa-control.ps1` is not recognized, the imported blueprint did not create the DediConnect startup script. Re-import the current blueprint version; it includes `\serverfiles\gsa-control.ps1`.
+If the log says `C:\Users\ContainerUser\serverfiles\gsa-control.ps1` is not recognized, confirm the blueprint was created from `GSA + Steam (Windows only)` and not `Import Custom Docker container`. A Steam blueprint should let GSA generate/manage its own install/start flow.
 
-If the log says `srcds.exe` cannot be found after the SteamCMD step, the Steam app `232250` did not finish installing or the server files mount is wrong. This blueprint mounts GSA storage at:
+If the log says `srcds.exe` cannot be found, the Steam app `232250` did not finish installing or the server files mount is wrong. This blueprint mounts GSA storage at:
 
 ```text
 {container.home_root}/serverfiles -> C:/Users/ContainerUser/serverfiles
@@ -17,11 +17,7 @@ If the log says `srcds.exe` cannot be found after the SteamCMD step, the Steam a
 
 ## Blueprint Import Blocked
 
-If GameServerApp or Cloudflare blocks the blueprint import, make sure you are using the current blueprint from this repository. The startup script uses SteamCMD from the DediConnect image and does not embed SteamCMD web-download commands, archive extraction, or external installer URLs inside the submitted JSON.
-
-## SteamCMD Not Found
-
-If the log says SteamCMD was not found in the DediConnect Windows image, check whether the selected GSA image/tag includes SteamCMD. The blueprint checks `STEAMCMD_PATH` and the common Windows SteamCMD install paths before exiting.
+If GameServerApp or Cloudflare blocks the blueprint import, make sure you are using the current blueprint from this repository. It does not embed SteamCMD install/update commands, web-download commands, archive extraction, or external installer URLs inside the submitted JSON.
 
 ## Invalid Or Missing Map
 
