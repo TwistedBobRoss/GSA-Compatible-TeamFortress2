@@ -1,10 +1,24 @@
 # GameServerApp Import Guide
 
-Use this file with a GameServerApp `GSA + Steam (Windows only)` blueprint version:
+Use this file with the recommended GameServerApp `Import Custom Docker container` path:
 
 ```text
-blueprints/teamfortress2-gsa-dediconnect-windows.json
+blueprints/teamfortress2-custom-docker-windows.json
 ```
+
+The custom image is:
+
+```text
+ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r1
+```
+
+You can also seed the GSA Docker importer with:
+
+```text
+docker-run.gsa-import.txt
+```
+
+After the first GitHub Actions build finishes, confirm the GHCR package is public. A private GHCR package will cause image pull failures on GSA hosts unless registry credentials are configured.
 
 ## Required Or Recommended Values
 
@@ -28,21 +42,21 @@ The blueprint registers:
 
 ## First Boot
 
-The first start can take several minutes while GSA + Steam prepares the Team Fortress 2 Dedicated Server files with the official DediConnect Windows image.
+The first start can take several minutes while the custom image prepares the Team Fortress 2 Dedicated Server files under `C:/serverfiles`.
 
 Recommended first checks:
 
-1. Watch the Docker container log for GSA + Steam install progress for Team Fortress 2 app `232250`.
+1. Watch the Docker container log for Team Fortress 2 app `232250` install/update progress.
 2. Confirm `srcds.exe` exists under `\serverfiles` after installation.
 3. Confirm `server.cfg`, `mapcycle.txt`, `motd.txt`, and `motd_text.txt` exist under `\serverfiles\tf\cfg`.
 4. Confirm the server reaches the configured start map instead of exiting immediately.
 
 ## Startup Command
 
-The blueprint lets GSA + Steam install app `232250` and launch SRCDS with:
+The image installs/updates app `232250` and launches SRCDS with:
 
 ```text
 -game tf -console -norestart -usercon -strictportbind -condebug -port {gameserver.game_port} +map {config_parameter id="start_map"} +maxplayers {gameserver.slot_limit} +exec server.cfg
 ```
 
-The submitted JSON intentionally does not include a root-level `type: custom` marker, a custom `gsa-control.ps1`, SteamCMD install/update commands, web-download commands, archive extraction, or external installer URLs.
+The custom Docker blueprint intentionally keeps install/start logic out of the GSA JSON. The GSA JSON points at the GHCR image and passes environment variables into `Start.ps1`.

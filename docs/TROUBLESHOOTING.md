@@ -7,17 +7,17 @@ Check the Docker container log first. Then check:
 - `\serverfiles\tf\console.log`
 - `\serverfiles\tf\logs`
 
-If the log says `C:\Users\ContainerUser\serverfiles\gsa-control.ps1` is not recognized, the server is not using the native GSA + Steam launch flow for this blueprint version. Confirm the blueprint version was created from `GSA + Steam (Windows only)`, not `Import Custom Docker container`, and clear any Config template `Special settings` custom launch script. Then activate that blueprint version on the server's config template and reinstall the server.
+If the log says `C:\Users\ContainerUser\serverfiles\gsa-control.ps1` is not recognized, the server is still using the old GSA + Steam/custom-launch attempt. Switch to `blueprints/teamfortress2-custom-docker-windows.json`, create the version through `Import Custom Docker container`, clear any Config template `Special settings` custom launch script, activate that template on the server, and reinstall.
 
-If the log says `srcds.exe` cannot be found, the Steam app `232250` did not finish installing or the server files mount is wrong. This blueprint mounts GSA storage at:
+If the log says `srcds.exe` cannot be found, the Steam app `232250` did not finish installing or the server files mount is wrong. The custom Docker blueprint mounts GSA storage at:
 
 ```text
-{container.home_root}/serverfiles -> C:/Users/ContainerUser/serverfiles
+{container.home_root}/serverfiles -> C:/serverfiles
 ```
 
 ## Blueprint Import Blocked
 
-If GameServerApp or Cloudflare blocks the blueprint import, make sure you are using the current blueprint from this repository. It does not embed a custom `gsa-control.ps1`, direct Steam install/update command strings, web-download commands, archive extraction, or external installer URLs inside the submitted JSON.
+If GameServerApp or Cloudflare blocks the blueprint import, make sure you are using `blueprints/teamfortress2-custom-docker-windows.json`. The install/update logic lives in the Docker image and should not be pasted into the GSA JSON.
 
 ## Invalid Or Missing Map
 

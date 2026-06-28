@@ -1,0 +1,336 @@
+{
+  "_version": 3,
+  "type": "custom",
+  "docker": {
+    "ports": {
+      "game": {
+        "port": "27015",
+        "multiplier": "1"
+      }
+    },
+    "image": {
+      "name": "ghcr.io/twistedbobross/gsa-compatible-teamfortress2",
+      "tag": "232250-ltsc2022-r1"
+    },
+    "automatic_ports": true,
+    "envs": {
+      "TF2_PORT": "{gameserver.game_port}",
+      "TF2_MAXPLAYERS": "{gameserver.slot_limit}",
+      "TF2_START_MAP": "{config_parameter id=\"start_map\"}",
+      "TF2_UPDATE_ON_START": "{config_parameter id=\"update_on_start\"}",
+      "TF2_VALIDATE_ON_UPDATE": "{config_parameter id=\"validate_on_update\"}",
+      "TF2_EXTRA_ARGS": "{config_parameter id=\"extra_args\"}"
+    },
+    "mounts": {
+      "{container.home_root}/serverfiles": "C:/serverfiles"
+    }
+  },
+  "dir": {
+    "Serverfiles": {
+      "path": "\\serverfiles",
+      "create": true,
+      "type": "normal"
+    },
+    "TF2 Config": {
+      "path": "\\serverfiles\\tf\\cfg",
+      "create": true,
+      "type": "normal"
+    },
+    "TF2 Logs": {
+      "path": "\\serverfiles\\tf\\logs",
+      "create": true,
+      "type": "logs"
+    },
+    "TF2 Custom Content": {
+      "path": "\\serverfiles\\tf\\custom",
+      "create": true,
+      "type": "normal"
+    }
+  },
+  "game": {
+    "server": {
+      "wipe": [],
+      "backup": {
+        "TF2 Config": "\\serverfiles\\tf\\cfg",
+        "TF2 Custom Content": "\\serverfiles\\tf\\custom"
+      },
+      "monitoring": {
+        "type": "container",
+        "recovery_mode": true
+      }
+    },
+    "type": "custom",
+    "config": {
+      "files": {
+        "server.cfg": {
+          "path": "\\serverfiles\\tf\\cfg\\server.cfg",
+          "info": "Primary Team Fortress 2 server configuration. The custom Docker image installs/updates app 232250 and launches SRCDS.",
+          "disable_edit": "0",
+          "content": "// Team Fortress 2 - GameServerApp managed server.cfg\n\n// Server identity and access\nsv_setsteamaccount \"{config_parameter id=\"steam_gslt\"}\"\nhostname \"{gameserver.list_name}\"\nrcon_password \"{gameserver.rcon_password}\"\nsv_password \"{config_parameter id=\"server_password\"}\"\nsv_tags \"{config_parameter id=\"server_tags\"}\"\nsv_lan \"{config_parameter id=\"sv_lan\"}\"\n\n// Client content and downloads\nsv_pure \"{config_parameter id=\"sv_pure\"}\"\nsv_allowdownload \"{config_parameter id=\"allow_downloads\"}\"\nsv_allowupload \"{config_parameter id=\"allow_uploads\"}\"\nsv_downloadurl \"{config_parameter id=\"fastdl_url\"}\"\n\n// Template-managed files\nmapcyclefile \"cfg/mapcycle.txt\"\nmotdfile \"cfg/motd.txt\"\nmotdfile_text \"cfg/motd_text.txt\"\n\n// Match flow\nmp_timelimit \"{config_parameter id=\"mp_timelimit\"}\"\nmp_maxrounds \"{config_parameter id=\"mp_maxrounds\"}\"\nmp_winlimit \"{config_parameter id=\"mp_winlimit\"}\"\nmp_match_end_at_timelimit \"{config_parameter id=\"mp_match_end_at_timelimit\"}\"\nmp_disable_respawn_times \"{config_parameter id=\"mp_disable_respawn_times\"}\"\n\n// Team balance\nmp_autoteambalance \"{config_parameter id=\"mp_autoteambalance\"}\"\nmp_teams_unbalance_limit \"{config_parameter id=\"mp_teams_unbalance_limit\"}\"\nmp_scrambleteams_auto \"{config_parameter id=\"mp_scrambleteams_auto\"}\"\n\n// Voice and gameplay\nsv_alltalk \"{config_parameter id=\"sv_alltalk\"}\"\ntf_weapon_criticals \"{config_parameter id=\"tf_weapon_criticals\"}\"\ntf_weapon_criticals_melee \"{config_parameter id=\"tf_weapon_criticals_melee\"}\"\n\n// TF bots\ntf_bot_quota \"{config_parameter id=\"tf_bot_quota\"}\"\ntf_bot_quota_mode \"{config_parameter id=\"tf_bot_quota_mode\"}\"\ntf_bot_difficulty \"{config_parameter id=\"tf_bot_difficulty\"}\"\ntf_bot_join_after_player \"{config_parameter id=\"tf_bot_join_after_player\"}\"\ntf_bot_auto_vacate \"{config_parameter id=\"tf_bot_auto_vacate\"}\"\n\n// Voting\nsv_vote_issue_kick_allowed \"{config_parameter id=\"vote_kick\"}\"\nsv_vote_issue_changelevel_allowed \"{config_parameter id=\"vote_changelevel\"}\"\nsv_vote_issue_nextlevel_allowed \"{config_parameter id=\"vote_nextlevel\"}\"\nsv_vote_issue_scramble_teams_allowed \"{config_parameter id=\"vote_scramble\"}\"\n\n// Performance and logging\nsv_hibernate_when_empty \"{config_parameter id=\"sv_hibernate_when_empty\"}\"\nlog on\nsv_logfile 1\nsv_logecho 0\nsv_log_onefile 0\nsv_logbans 1\n\nwriteid\nwriteip\n"
+        },
+        "mapcycle.txt": {
+          "path": "\\serverfiles\\tf\\cfg\\mapcycle.txt",
+          "info": "One map name per line. Edit for your preferred rotation.",
+          "disable_edit": "0",
+          "content": "pl_upward\npl_badwater\npl_barnblitz\ncp_dustbowl\ncp_gorge\ncp_granary\nkoth_viaduct\nkoth_sawmill\nctf_2fort\nctf_turbine\n"
+        },
+        "motd.txt": {
+          "path": "\\serverfiles\\tf\\cfg\\motd.txt",
+          "info": "HTML Message of the Day.",
+          "disable_edit": "0",
+          "content": "<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <title>Server Message</title>\n</head>\n<body bgcolor=\"#1b1b1b\" text=\"#f2f2f2\">\n  <h2>{gameserver.list_name}</h2>\n  <p>{config_parameter id=\"motd_message\"}</p>\n</body>\n</html>\n"
+        },
+        "motd_text.txt": {
+          "path": "\\serverfiles\\tf\\cfg\\motd_text.txt",
+          "info": "Plain-text MOTD fallback.",
+          "disable_edit": "0",
+          "content": "{gameserver.list_name}\n{config_parameter id=\"motd_message\"}\n"
+        }
+      },
+      "parameters": {
+        "start_map": {
+          "name": "Starting Map",
+          "info": "Map loaded when SRCDS starts. Use a map name without .bsp, for example pl_upward, cp_process_final, koth_viaduct, or ctf_2fort.",
+          "section": "Launch",
+          "type": "text",
+          "content": "pl_upward"
+        },
+        "update_on_start": {
+          "name": "Update On Start",
+          "info": "Runs the TF2 dedicated server update before launch. Recommended on.",
+          "section": "Install",
+          "type": "boolean",
+          "content": "1"
+        },
+        "validate_on_update": {
+          "name": "Validate On Update",
+          "info": "Runs Steam file validation during update. Use for repair attempts; it can make startup slower.",
+          "section": "Install",
+          "type": "boolean",
+          "content": "0"
+        },
+        "extra_args": {
+          "name": "Extra Launch Arguments",
+          "info": "Optional raw SRCDS launch arguments appended after the managed arguments.",
+          "section": "Launch",
+          "type": "text",
+          "content": ""
+        },
+        "steam_gslt": {
+          "name": "Steam Game Server Login Token",
+          "info": "Recommended for public listing. Create a Team Fortress 2 token for App ID 440.",
+          "section": "Launch",
+          "type": "text",
+          "content": ""
+        },
+        "sv_lan": {
+          "name": "LAN Mode",
+          "info": "On is for local-network servers. Off is for internet-accessible servers.",
+          "section": "Launch",
+          "type": "boolean",
+          "content": "0"
+        },
+        "server_password": {
+          "name": "Join Password",
+          "info": "Leave blank for public access.",
+          "section": "Server Identity",
+          "type": "text",
+          "content": ""
+        },
+        "server_tags": {
+          "name": "Server Browser Tags",
+          "info": "Comma-separated tags for server-browser filtering.",
+          "section": "Server Identity",
+          "type": "text",
+          "content": "community,vanilla"
+        },
+        "motd_message": {
+          "name": "MOTD Message",
+          "info": "Short message shown by the included MOTD files.",
+          "section": "Server Identity",
+          "type": "text",
+          "content": "Welcome to the server!"
+        },
+        "sv_pure": {
+          "name": "Content Purity",
+          "info": "Controls client custom-content enforcement.",
+          "section": "Content and Downloads",
+          "type": "array",
+          "dropdown": "{\"Standard (1)\":\"1\",\"Disabled (0)\":\"0\",\"Strict (2)\":\"2\"}",
+          "content": "1"
+        },
+        "allow_downloads": {
+          "name": "Allow Client Downloads",
+          "info": "Allows clients to download required custom maps or content.",
+          "section": "Content and Downloads",
+          "type": "boolean",
+          "content": "1"
+        },
+        "allow_uploads": {
+          "name": "Allow Client Uploads",
+          "info": "Allows player uploads to the server. Keep disabled unless required.",
+          "section": "Content and Downloads",
+          "type": "boolean",
+          "content": "0"
+        },
+        "fastdl_url": {
+          "name": "FastDL URL",
+          "info": "Optional web URL for faster custom-content downloads.",
+          "section": "Content and Downloads",
+          "type": "text",
+          "content": ""
+        },
+        "mp_timelimit": {
+          "name": "Map Time Limit",
+          "info": "Minutes before the map time limit is reached. Set 0 to disable.",
+          "section": "Match Flow",
+          "type": "text",
+          "content": "30"
+        },
+        "mp_maxrounds": {
+          "name": "Maximum Rounds",
+          "info": "Completed-round limit before changing map. Set 0 to disable.",
+          "section": "Match Flow",
+          "type": "text",
+          "content": "0"
+        },
+        "mp_winlimit": {
+          "name": "Win Limit",
+          "info": "Changes map when a team reaches this many wins. Set 0 to disable.",
+          "section": "Match Flow",
+          "type": "text",
+          "content": "0"
+        },
+        "mp_match_end_at_timelimit": {
+          "name": "End At Time Limit",
+          "info": "Ends the current map as soon as the time limit is reached.",
+          "section": "Match Flow",
+          "type": "boolean",
+          "content": "0"
+        },
+        "mp_disable_respawn_times": {
+          "name": "Instant Respawns",
+          "info": "Disables normal respawn-wave delays.",
+          "section": "Match Flow",
+          "type": "boolean",
+          "content": "0"
+        },
+        "mp_autoteambalance": {
+          "name": "Automatic Team Balance",
+          "info": "Allows the server to balance uneven teams.",
+          "section": "Teams",
+          "type": "boolean",
+          "content": "1"
+        },
+        "mp_teams_unbalance_limit": {
+          "name": "Team Imbalance Limit",
+          "info": "Allowed player-count difference before balancing can intervene.",
+          "section": "Teams",
+          "type": "text",
+          "content": "1"
+        },
+        "mp_scrambleteams_auto": {
+          "name": "Automatic Team Scramble",
+          "info": "Enables automatic scrambling.",
+          "section": "Teams",
+          "type": "boolean",
+          "content": "0"
+        },
+        "sv_alltalk": {
+          "name": "All Talk",
+          "info": "Allows voice chat across teams.",
+          "section": "Voice and Gameplay",
+          "type": "boolean",
+          "content": "0"
+        },
+        "tf_weapon_criticals": {
+          "name": "Random Critical Hits",
+          "info": "Enables TF2 random critical hits.",
+          "section": "Voice and Gameplay",
+          "type": "boolean",
+          "content": "1"
+        },
+        "tf_weapon_criticals_melee": {
+          "name": "Random Melee Critical Hits",
+          "info": "Controls melee random critical hits.",
+          "section": "Voice and Gameplay",
+          "type": "array",
+          "dropdown": "{\"Follow Global Random Crit Setting\":\"1\",\"Disabled\":\"0\",\"Always Allow Melee Random Crits\":\"2\"}",
+          "content": "1"
+        },
+        "tf_bot_quota": {
+          "name": "TF Bot Quota",
+          "info": "Total number of managed TF bots. Set 0 for no bots.",
+          "section": "Bots",
+          "type": "text",
+          "content": "0"
+        },
+        "tf_bot_quota_mode": {
+          "name": "TF Bot Quota Mode",
+          "info": "Normal maintains a bot count. Fill keeps total players at the quota. Match maintains a human-to-bot ratio.",
+          "section": "Bots",
+          "type": "array",
+          "dropdown": "{\"Normal\":\"normal\",\"Fill\":\"fill\",\"Match\":\"match\"}",
+          "content": "fill"
+        },
+        "tf_bot_difficulty": {
+          "name": "TF Bot Difficulty",
+          "info": "Difficulty assigned to joining TF bots.",
+          "section": "Bots",
+          "type": "array",
+          "dropdown": "{\"Easy\":\"0\",\"Normal\":\"1\",\"Hard\":\"2\",\"Expert\":\"3\"}",
+          "content": "1"
+        },
+        "tf_bot_join_after_player": {
+          "name": "Bots Wait For Human",
+          "info": "Bots do not join until at least one human connects.",
+          "section": "Bots",
+          "type": "boolean",
+          "content": "1"
+        },
+        "tf_bot_auto_vacate": {
+          "name": "Bots Yield Slots",
+          "info": "Bots automatically leave to make room for human players.",
+          "section": "Bots",
+          "type": "boolean",
+          "content": "1"
+        },
+        "vote_kick": {
+          "name": "Allow Kick Votes",
+          "info": "Allows player-initiated kick votes.",
+          "section": "Voting",
+          "type": "boolean",
+          "content": "1"
+        },
+        "vote_changelevel": {
+          "name": "Allow Change-Map Votes",
+          "info": "Allows votes to change the current map.",
+          "section": "Voting",
+          "type": "boolean",
+          "content": "1"
+        },
+        "vote_nextlevel": {
+          "name": "Allow Next-Map Votes",
+          "info": "Allows player votes for the next map.",
+          "section": "Voting",
+          "type": "boolean",
+          "content": "1"
+        },
+        "vote_scramble": {
+          "name": "Allow Team-Scramble Votes",
+          "info": "Allows votes to scramble teams.",
+          "section": "Voting",
+          "type": "boolean",
+          "content": "1"
+        },
+        "sv_hibernate_when_empty": {
+          "name": "Hibernate While Empty",
+          "info": "Allows the server to reduce activity while no players are connected.",
+          "section": "Performance",
+          "type": "boolean",
+          "content": "1"
+        }
+      }
+    }
+  }
+}
