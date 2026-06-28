@@ -11,6 +11,8 @@ blueprints/teamfortress2-gsa-dediconnect-windows.json
 | Parameter | Recommended value | Notes |
 | --- | --- | --- |
 | `start_map` | `pl_upward` | Use a valid TF2 map name without `.bsp`. |
+| `update_on_start` | `1` | Keep enabled for first boot and normal update checks. |
+| `validate_on_update` | `0` | Enable temporarily if files look corrupted; validation is slower. |
 | `steam_gslt` | Your TF2 GSLT | Recommended for public listing. Create the token for App ID `440`. |
 | `sv_lan` | `0` | Keep off for an internet-accessible server. |
 | `server_password` | Blank | Leave blank for a public server. |
@@ -28,21 +30,22 @@ The blueprint registers:
 
 ## First Boot
 
-The first start can take several minutes while GSA + Steam prepares the Team Fortress 2 Dedicated Server files.
+The first start can take several minutes while the startup script prepares the Team Fortress 2 Dedicated Server files with the official DediConnect Windows image.
 
 Recommended first checks:
 
-1. Watch the Docker container log for GSA + Steam install progress.
+1. Watch the Docker container log for Team Fortress 2 app `232250` install progress.
 2. Confirm `srcds.exe` exists under `\serverfiles` after installation.
-3. Confirm `server.cfg`, `mapcycle.txt`, `motd.txt`, and `motd_text.txt` exist under `\serverfiles\tf\cfg`.
-4. Confirm the server reaches the configured start map instead of exiting immediately.
+3. Confirm `gsa-control.ps1` exists under `\serverfiles`.
+4. Confirm `server.cfg`, `mapcycle.txt`, `motd.txt`, and `motd_text.txt` exist under `\serverfiles\tf\cfg`.
+5. Confirm the server reaches the configured start map instead of exiting immediately.
 
 ## Startup Command
 
-The blueprint launches SRCDS with:
+The blueprint writes `\serverfiles\gsa-control.ps1`, which prepares the TF2 server files if needed and then launches SRCDS with:
 
 ```text
 -game tf -console -norestart -usercon -strictportbind -condebug -port {gameserver.game_port} +map {config_parameter id="start_map"} +maxplayers {gameserver.slot_limit} +exec server.cfg
 ```
 
-The blueprint intentionally does not include a custom `gsa-control.ps1` install script. GSA + Steam should generate/manage the Steam install and launch flow.
+The script uses the Steam install tool already present in the official GSA DediConnect Windows image. It does not download installers from third-party URLs.
