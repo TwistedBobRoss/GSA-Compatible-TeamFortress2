@@ -12,8 +12,6 @@ blueprints/teamfortress2-gsa-dediconnect-windows.json
 | --- | --- | --- |
 | `start_map` | `pl_upward` | Use a valid TF2 map name without `.bsp`. |
 | `steam_gslt` | Your TF2 GSLT | Recommended for public listing. Create the token for App ID `440`. |
-| `update_on_start` | `1` | Runs SteamCMD app_update `232250` before launch. |
-| `validate_on_update` | `0` | Enable only when repairing files because it slows startup. |
 | `sv_lan` | `0` | Keep off for an internet-accessible server. |
 | `server_password` | Blank | Leave blank for a public server. |
 
@@ -30,11 +28,11 @@ The blueprint registers:
 
 ## First Boot
 
-The first start can take several minutes while the DediConnect image installs the Team Fortress 2 Dedicated Server files through SteamCMD.
+The first start can take several minutes while the GSA + Steam install flow prepares the Team Fortress 2 Dedicated Server files.
 
 Recommended first checks:
 
-1. Watch the Docker container log for SteamCMD install progress.
+1. Watch the Docker container log for GSA + Steam install progress.
 2. Confirm `gsa-control.ps1` exists under `\serverfiles`.
 3. Confirm `srcds.exe` exists under `\serverfiles` after installation.
 4. Confirm `server.cfg`, `mapcycle.txt`, `motd.txt`, and `motd_text.txt` exist under `\serverfiles\tf\cfg`.
@@ -45,7 +43,7 @@ Recommended first checks:
 The blueprint launches SRCDS with:
 
 ```text
--game tf -console -norestart -usercon -strictportbind -condebug -port {gameserver.game_port} +sv_setsteamaccount {config_parameter id="steam_gslt"} +map {config_parameter id="start_map"} +maxplayers {gameserver.slot_limit} +exec server.cfg
+-game tf -console -norestart -usercon -strictportbind -condebug -port {gameserver.game_port} +map {config_parameter id="start_map"} +maxplayers {gameserver.slot_limit} +exec server.cfg
 ```
 
 `gsa-control.ps1` builds this startup command at runtime and only adds `+sv_setsteamaccount` when a token is configured.

@@ -9,11 +9,15 @@ Check the Docker container log first. Then check:
 
 If the log says `C:\Users\ContainerUser\serverfiles\gsa-control.ps1` is not recognized, the imported blueprint did not create the DediConnect startup script. Re-import the current blueprint version; it includes `\serverfiles\gsa-control.ps1`.
 
-If the log says `srcds.exe` cannot be found, SteamCMD did not finish installing app `232250` or the server files mount is wrong. This blueprint mounts GSA storage at:
+If the log says `srcds.exe` cannot be found, the GSA + Steam install did not finish preparing app `232250` or the server files mount is wrong. This blueprint mounts GSA storage at:
 
 ```text
 {container.home_root}/serverfiles -> C:/Users/ContainerUser/serverfiles
 ```
+
+## Blueprint Import Blocked
+
+If GameServerApp or Cloudflare blocks the blueprint import, make sure you are using the current blueprint from this repository. The startup script is intentionally minimal and does not embed SteamCMD download/update commands, web requests, archive extraction, or external installer URLs inside the submitted JSON.
 
 ## Invalid Or Missing Map
 
