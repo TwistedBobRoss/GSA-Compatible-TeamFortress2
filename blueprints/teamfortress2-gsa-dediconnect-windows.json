@@ -58,6 +58,12 @@
     },
     "config": {
       "files": {
+        "gsa-control.ps1": {
+          "path": "\\serverfiles\\gsa-control.ps1",
+          "info": "DediConnect Windows startup control script. This must exist at server root before the container starts.",
+          "disable_edit": "1",
+          "content": "$ErrorActionPreference = \"Stop\"\n\nfunction Convert-GsaBool {\n    param(\n        [string]$Value,\n        [bool]$Default\n    )\n\n    if ([string]::IsNullOrWhiteSpace($Value) -or $Value -match '^\\s*\\{') {\n        return $Default\n    }\n\n    switch ($Value.Trim().ToLowerInvariant()) {\n        \"1\" { return $true }\n        \"true\" { return $true }\n        \"yes\" { return $true }\n        \"on\" { return $true }\n        \"0\" { return $false }\n        \"false\" { return $false }\n        \"no\" { return $false }\n        \"off\" { return $false }\n        default { return $Default }\n    }\n}\n\nfunction Test-GsaValue {\n    param([string]$Value)\n\n    if ([string]::IsNullOrWhiteSpace($Value)) {\n        return $false\n    }\n\n    return $Value -notmatch '^\\s*\\{'\n}\n\n$ServerRoot = \"C:\\Users\\ContainerUser\\serverfiles\"\n$ServerExe = Join-Path $ServerRoot \"srcds.exe\"\n$GameDir = Join-Path $ServerRoot \"tf\"\n$CfgDir = Join-Path $GameDir \"cfg\"\n$LogDir = Join-Path $GameDir \"logs\"\n$CustomDir = Join-Path $GameDir \"custom\"\n$SteamAppId = \"232250\"\n\n$UpdateOnStart = Convert-GsaBool -Value '{config_parameter id=\"update_on_start\"}' -Default $true\n$ValidateOnUpdate = Convert-GsaBool -Value '{config_parameter id=\"validate_on_update\"}' -Default $false\n$GamePort = '{gameserver.game_port}'\n$SlotLimit = '{gameserver.slot_limit}'\n$StartMap = '{config_parameter id=\"start_map\"}'\n$Gslt = '{config_parameter id=\"steam_gslt\"}'\n\nfunction Get-SteamCmdPath {\n    $Candidates = @()\n\n    if (-not [string]::IsNullOrWhiteSpace($env:STEAMCMD_PATH)) {\n        $Candidates += $env:STEAMCMD_PATH\n    }\n\n    $PathSteamCmd = Get-Command steamcmd.exe -ErrorAction SilentlyContinue | Select-Object -First 1\n    if ($PathSteamCmd) {\n        $Candidates += $PathSteamCmd.Source\n    }\n\n    $Candidates += @(\n        \"C:\\steamcmd\\steamcmd.exe\",\n        \"C:\\SteamCMD\\steamcmd.exe\",\n        \"C:\\Users\\ContainerUser\\steamcmd\\steamcmd.exe\",\n        (Join-Path $ServerRoot \"steamcmd\\steamcmd.exe\")\n    )\n\n    foreach ($Candidate in $Candidates) {\n        if ((Test-GsaValue $Candidate) -and (Test-Path -LiteralPath $Candidate)) {\n            return $Candidate\n        }\n    }\n\n    $SteamDir = Join-Path $ServerRoot \"steamcmd\"\n    $ZipPath = Join-Path $SteamDir \"steamcmd.zip\"\n    New-Item -ItemType Directory -Force -Path $SteamDir | Out-Null\n\n    Write-Host \"*** SteamCMD was not found in the image; downloading SteamCMD\"\n    Invoke-WebRequest -Uri \"https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip\" -OutFile $ZipPath -UseBasicParsing\n    Expand-Archive -Path $ZipPath -DestinationPath $SteamDir -Force\n\n    $Downloaded = Join-Path $SteamDir \"steamcmd.exe\"\n    if (-not (Test-Path -LiteralPath $Downloaded)) {\n        throw \"SteamCMD download completed, but steamcmd.exe was not found at $Downloaded\"\n    }\n\n    return $Downloaded\n}\n\nNew-Item -ItemType Directory -Force -Path $ServerRoot, $CfgDir, $LogDir, $CustomDir | Out-Null\n\n$SteamCmd = Get-SteamCmdPath\nWrite-Host \"*** Using SteamCMD: $SteamCmd\"\n\nif ($UpdateOnStart -or -not (Test-Path -LiteralPath $ServerExe)) {\n    $UpdateArgs = @(\n        \"+force_install_dir\", $ServerRoot,\n        \"+login\", \"anonymous\",\n        \"+app_update\", $SteamAppId\n    )\n\n    if ($ValidateOnUpdate) {\n        $UpdateArgs += \"validate\"\n    }\n\n    $UpdateArgs += \"+quit\"\n\n    Write-Host \"*** Installing/updating Team Fortress 2 Dedicated Server app $SteamAppId\"\n    & $SteamCmd @UpdateArgs\n    $SteamExit = $LASTEXITCODE\n    if ($SteamExit -ne 0) {\n        Write-Error \"SteamCMD failed with exit code $SteamExit\"\n        exit $SteamExit\n    }\n}\nelse {\n    Write-Host \"*** Skipping SteamCMD update because Update Server On Start is disabled and srcds.exe already exists\"\n}\n\nif (-not (Test-Path -LiteralPath $ServerExe)) {\n    Write-Error \"TF2 server executable was not found at $ServerExe after SteamCMD update. Check the container log for SteamCMD errors.\"\n    exit 1\n}\n\n$ServerArgs = @(\n    \"-game\", \"tf\",\n    \"-console\",\n    \"-norestart\",\n    \"-usercon\",\n    \"-strictportbind\",\n    \"-condebug\",\n    \"-port\", $GamePort\n)\n\nif (Test-GsaValue $Gslt) {\n    $ServerArgs += @(\"+sv_setsteamaccount\", $Gslt)\n}\nelse {\n    Write-Host \"*** No Steam GSLT configured; public listing may be limited\"\n}\n\n$ServerArgs += @(\n    \"+map\", $StartMap,\n    \"+maxplayers\", $SlotLimit,\n    \"+exec\", \"server.cfg\"\n)\n\nSet-Location -LiteralPath $ServerRoot\nWrite-Host \"*** Starting Team Fortress 2 Dedicated Server\"\nWrite-Host (\"*** Executable: \" + $ServerExe)\nWrite-Host (\"*** Args: \" + ($ServerArgs -join \" \"))\n\n& $ServerExe @ServerArgs\n$ExitCode = $LASTEXITCODE\nWrite-Host \"*** Team Fortress 2 server exited with code $ExitCode\"\nexit $ExitCode\n"
+        },
         "server.cfg": {
           "path": "\\serverfiles\\tf\\cfg\\server.cfg",
           "info": "Primary TF2 server configuration. The GSLT is passed during launch; keep this file editable for advanced manual cvars.",
@@ -84,6 +90,20 @@
         }
       },
       "parameters": {
+        "update_on_start": {
+          "name": "Update Server On Start",
+          "info": "Runs SteamCMD app_update 232250 before launching. Keep enabled for first boot and automatic repair/update behavior.",
+          "section": "Launch",
+          "type": "boolean",
+          "content": "1"
+        },
+        "validate_on_update": {
+          "name": "Validate During Update",
+          "info": "Adds SteamCMD validate when updating. Useful for repair, but it can make startup much slower.",
+          "section": "Launch",
+          "type": "boolean",
+          "content": "0"
+        },
         "start_map": {
           "name": "Starting Map",
           "info": "Map loaded when the server starts. Enter a valid TF2 map name without .bsp, for example pl_upward, cp_process_final, koth_viaduct, or ctf_2fort.",
@@ -292,7 +312,7 @@
           "content": "1"
         },
         "vote_changelevel": {
-          "name": "Allow Change-Map Votes",
+          "name": "Alllow Change-Map Votes",
           "info": "Allows player votes to change the current map.",
           "section": "Voting",
           "type": "boolean",
