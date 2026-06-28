@@ -89,8 +89,23 @@ function Invoke-Tf2Update {
         Write-Host "SteamCMD validation is enabled for this run."
     }
 
-    & $SteamCmd @steamArgs
-    $exitCode = $LASTEXITCODE
+    $exitCode = $null
+    for ($attempt = 1; $attempt -le 2; $attempt++) {
+        & $SteamCmd @steamArgs
+        $exitCode = $LASTEXITCODE
+        if ($exitCode -eq 0) {
+            break
+        }
+
+        if ($exitCode -eq 7 -and $attempt -lt 2) {
+            Write-Warning "SteamCMD returned exit code 7, likely after a self-update. Retrying once."
+            Start-Sleep -Seconds 5
+            continue
+        }
+
+        break
+    }
+
     if ($exitCode -ne 0) {
         throw "SteamCMD app_update 232250 failed with exit code $exitCode."
     }
