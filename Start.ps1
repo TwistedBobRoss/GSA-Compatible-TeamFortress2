@@ -75,6 +75,7 @@ function Invoke-Tf2Update {
     $steamArgs = @(
         "+force_install_dir", $InstallRoot,
         "+login", "anonymous",
+        "+app_set_config", "232250", "mod", "tf",
         "+app_update", "232250"
     )
 
