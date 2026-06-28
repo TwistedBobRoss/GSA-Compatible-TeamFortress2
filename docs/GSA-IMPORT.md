@@ -9,7 +9,13 @@ blueprints/teamfortress2-custom-docker-windows.json
 The custom image is:
 
 ```text
-ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r1
+ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r2
+```
+
+The image applies the required Team Fortress 2 SteamCMD setting before installing app `232250`:
+
+```text
+app_set_config 232250 mod tf
 ```
 
 You can also seed the GSA Docker importer with:
@@ -18,7 +24,7 @@ You can also seed the GSA Docker importer with:
 docker-run.gsa-import.txt
 ```
 
-After the first GitHub Actions build finishes, confirm the GHCR package is public. A private GHCR package will cause image pull failures on GSA hosts unless registry credentials are configured.
+After the GitHub Actions build finishes, confirm the GHCR package is public. A private GHCR package will cause image pull failures on GSA hosts unless registry credentials are configured.
 
 ## Required Or Recommended Values
 
@@ -46,10 +52,12 @@ The first start can take several minutes while the custom image prepares the Tea
 
 Recommended first checks:
 
-1. Watch the Docker container log for Team Fortress 2 app `232250` install/update progress.
-2. Confirm `srcds.exe` exists under `\serverfiles` after installation.
-3. Confirm `server.cfg`, `mapcycle.txt`, `motd.txt`, and `motd_text.txt` exist under `\serverfiles\tf\cfg`.
-4. Confirm the server reaches the configured start map instead of exiting immediately.
+1. Confirm the GitHub Actions image build published the `232250-ltsc2022-r2` tag successfully.
+2. Confirm the GHCR package is public.
+3. Watch the Docker container log for Team Fortress 2 app `232250` install/update progress.
+4. Confirm `srcds.exe` exists under `\serverfiles` after installation.
+5. Confirm `server.cfg`, `mapcycle.txt`, `motd.txt`, and `motd_text.txt` exist under `\serverfiles\tf\cfg`.
+6. Confirm the server reaches the configured start map instead of exiting immediately.
 
 ## Startup Command
 
