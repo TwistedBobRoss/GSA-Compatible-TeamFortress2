@@ -7,9 +7,7 @@ Check the Docker container log first. Then check:
 - `\serverfiles\tf\console.log`
 - `\serverfiles\tf\logs`
 
-If the log says `C:\Users\ContainerUser\serverfiles\gsa-control.ps1` is not recognized, the active GSA blueprint/config template did not write the control script. Import the latest blueprint version, activate it on the server's config template, then reinstall or restart after applying the template.
-
-If the log says the Steam install tool cannot be found, the official DediConnect Windows image being used by that server does not expose the expected install tool paths. At that point a small custom image based on the official image may be worth considering.
+If the log says `C:\Users\ContainerUser\serverfiles\gsa-control.ps1` is not recognized, the server is not using the native GSA + Steam launch flow for this blueprint version. Confirm the blueprint version was created from `GSA + Steam (Windows only)`, activate that version on the server's config template, and reinstall the server.
 
 If the log says `srcds.exe` cannot be found, the Steam app `232250` did not finish installing or the server files mount is wrong. This blueprint mounts GSA storage at:
 
@@ -19,7 +17,7 @@ If the log says `srcds.exe` cannot be found, the Steam app `232250` did not fini
 
 ## Blueprint Import Blocked
 
-If GameServerApp or Cloudflare blocks the blueprint import, make sure you are using the current blueprint from this repository. It does not embed direct Steam install/update command strings, web-download commands, archive extraction, or external installer URLs inside the submitted JSON.
+If GameServerApp or Cloudflare blocks the blueprint import, make sure you are using the current blueprint from this repository. It does not embed a custom `gsa-control.ps1`, direct Steam install/update command strings, web-download commands, archive extraction, or external installer URLs inside the submitted JSON.
 
 ## Invalid Or Missing Map
 
