@@ -21,7 +21,7 @@ concurrency:
 
 env:
   IMAGE_NAME: ghcr.io/twistedbobross/gsa-compatible-teamfortress2
-  IMAGE_TAG: 232250-ltsc2022-r2
+  IMAGE_TAG: 232250-ltsc2022-r3
   GHCR_USERNAME: twistedbobross
 
 jobs:
@@ -36,13 +36,16 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = "Stop"
+
           $dockerService = Get-Service -Name docker -ErrorAction SilentlyContinue
           if (-not $dockerService) {
             throw "The Docker service is not installed on this runner."
           }
+
           if ($dockerService.Status -ne "Running") {
             Start-Service -Name docker
           }
+
           $deadline = (Get-Date).AddMinutes(2)
           do {
             try {
@@ -50,10 +53,13 @@ jobs:
               break
             }
             catch {
-              if ((Get-Date) -ge $deadline) { throw }
+              if ((Get-Date) -ge $deadline) {
+                throw
+              }
               Start-Sleep -Seconds 5
             }
           } while ($true)
+
           docker version
           docker info
 
