@@ -13,7 +13,7 @@ blueprints/teamfortress2-custom-docker-windows.json
 The recommended blueprint uses a custom GHCR image:
 
 ```text
-ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r3
+ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r4
 ```
 
 The image installs/updates Steam app `232250` with SteamCMD inside the container, using an official-style TF2 SteamCMD script and multiple install passes if needed, then launches `srcds.exe` with GSA-managed ports, slots, map, and configuration files.
@@ -31,7 +31,7 @@ That version exposed a GSA launch-flow issue where the server kept trying to run
 ## What Was Fixed
 
 - Added a custom Windows Docker image build that installs SteamCMD and launches TF2 from `C:/serverfiles`.
-- Added a GHCR publishing workflow for `ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r3`.
+- Added a GHCR publishing workflow for `ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r4`.
 - Added `blueprints/teamfortress2-custom-docker-windows.json` for the custom Docker import path.
 - Kept install/start logic out of the GSA JSON so the dashboard only receives Docker metadata, environment variables, and config templates.
 - Added defaults for dropdown-backed parameters that previously rendered blank TF2 cvars.
@@ -39,13 +39,22 @@ That version exposed a GSA launch-flow issue where the server kept trying to run
 
 ## First Boot Checklist
 
-1. Let the GitHub Actions workflow build and publish the `232250-ltsc2022-r3` GHCR image.
+1. Let the GitHub Actions workflow build and publish the `232250-ltsc2022-r4` GHCR image.
 2. Create or update the blueprint using `Import Custom Docker container`.
 3. Import `blueprints/teamfortress2-custom-docker-windows.json` or seed from `docker-run.gsa-import.txt`.
 4. Set `Starting Map` to a stock map such as `pl_upward`.
 5. For a public server, set a TF2 Steam Game Server Login Token for App ID `440`.
 6. Install/reinstall the server and let the custom image prepare app `232250`.
 7. After startup, check `\serverfiles\tf\logs` and `\serverfiles\tf\console.log`.
+
+## Online Visibility Checklist
+
+- Set `Steam Game Server Login Token` to a valid Team Fortress 2 GSLT for App ID `440`.
+- Keep `LAN Mode` off (`0`).
+- Leave `Join Password` blank while testing public visibility.
+- Use a stock `Starting Map`, such as `pl_upward`.
+- Confirm the GSA machine exposes the assigned UDP game port publicly.
+- Wait a few minutes after boot for Steam master-server listing to catch up.
 
 ## GameServerApp References
 
