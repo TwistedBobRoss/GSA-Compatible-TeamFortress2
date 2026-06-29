@@ -10,15 +10,15 @@ Recommended import:
 blueprints/teamfortress2-custom-docker-windows.json
 ```
 
-The recommended blueprint uses the corrected custom GHCR image:
+The recommended blueprint uses a custom GHCR image:
 
 ```text
-ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r2
+ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r3
 ```
 
-The image installs/updates Steam app `232250` with SteamCMD inside the container, applies the required TF2 SteamCMD configuration (`app_set_config 232250 mod tf`), then launches `srcds.exe` with GSA-managed ports, slots, map, and configuration files.
+The image installs/updates Steam app `232250` with SteamCMD inside the container, using an official-style TF2 SteamCMD script and multiple install passes if needed, then launches `srcds.exe` with GSA-managed ports, slots, map, and configuration files.
 
-After the GitHub Actions build, confirm the GHCR package visibility is public. If the package is private, GSA will not be able to pull it without registry credentials.
+After the first GitHub Actions build, confirm the GHCR package visibility is public. If the package is private, GSA will not be able to pull it without registry credentials.
 
 The earlier `GSA + Steam` blueprint is still kept at:
 
@@ -26,13 +26,12 @@ The earlier `GSA + Steam` blueprint is still kept at:
 blueprints/teamfortress2-gsa-dediconnect-windows.json
 ```
 
-That version exposed a GSA launch-flow issue where the server kept trying to run `gsa-control.ps1`. The custom Docker image is the preferred path, matching the approach used by the working Renegade X and SuperTuxKart blueprints.
+That version exposed a GSA launch-flow issue where the server kept trying to run `gsa-control.ps1`. The custom Docker image is now the preferred path, matching the approach used by the working Renegade X and SuperTuxKart blueprints.
 
 ## What Was Fixed
 
 - Added a custom Windows Docker image build that installs SteamCMD and launches TF2 from `C:/serverfiles`.
-- Added a GHCR publishing workflow for `ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r2`.
-- Added the SteamCMD TF2 configuration required before installing app `232250`.
+- Added a GHCR publishing workflow for `ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r3`.
 - Added `blueprints/teamfortress2-custom-docker-windows.json` for the custom Docker import path.
 - Kept install/start logic out of the GSA JSON so the dashboard only receives Docker metadata, environment variables, and config templates.
 - Added defaults for dropdown-backed parameters that previously rendered blank TF2 cvars.
@@ -40,15 +39,13 @@ That version exposed a GSA launch-flow issue where the server kept trying to run
 
 ## First Boot Checklist
 
-1. Let the GitHub Actions workflow build and publish the `r2` GHCR image.
-2. Confirm the Actions run completed successfully and that the package tag exists in GHCR.
-3. Confirm the GHCR package visibility is public.
-4. Create or update the blueprint using `Import Custom Docker container`.
-5. Import `blueprints/teamfortress2-custom-docker-windows.json` or seed from `docker-run.gsa-import.txt`.
-6. Set `Starting Map` to a stock map such as `pl_upward`.
-7. For a public server, set a TF2 Steam Game Server Login Token for App ID `440`.
-8. Install/reinstall the server and let the custom image prepare app `232250`.
-9. After startup, check `\serverfiles\tf\logs` and `\serverfiles\tf\console.log`.
+1. Let the GitHub Actions workflow build and publish the `232250-ltsc2022-r3` GHCR image.
+2. Create or update the blueprint using `Import Custom Docker container`.
+3. Import `blueprints/teamfortress2-custom-docker-windows.json` or seed from `docker-run.gsa-import.txt`.
+4. Set `Starting Map` to a stock map such as `pl_upward`.
+5. For a public server, set a TF2 Steam Game Server Login Token for App ID `440`.
+6. Install/reinstall the server and let the custom image prepare app `232250`.
+7. After startup, check `\serverfiles\tf\logs` and `\serverfiles\tf\console.log`.
 
 ## GameServerApp References
 
