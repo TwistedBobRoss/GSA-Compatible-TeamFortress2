@@ -21,7 +21,7 @@ concurrency:
 
 env:
   IMAGE_NAME: ghcr.io/twistedbobross/gsa-compatible-teamfortress2
-  IMAGE_TAG: 232250-ltsc2022-r3
+  IMAGE_TAG: 232250-ltsc2022-r4
   GHCR_USERNAME: twistedbobross
 
 jobs:
