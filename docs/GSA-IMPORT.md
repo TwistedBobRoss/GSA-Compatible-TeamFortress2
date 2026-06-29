@@ -9,14 +9,10 @@ blueprints/teamfortress2-custom-docker-windows.json
 The custom image is:
 
 ```text
-ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r2
+ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r3
 ```
 
-The image applies the required Team Fortress 2 SteamCMD setting before installing app `232250`:
-
-```text
-app_set_config 232250 mod tf
-```
+The image follows the official TF2 dedicated-server SteamCMD flow for app `232250` and retries the install/update pass if SteamCMD self-updates or reports success before `srcds.exe` exists.
 
 You can also seed the GSA Docker importer with:
 
@@ -48,11 +44,11 @@ The blueprint registers:
 
 ## First Boot
 
-The first start can take several minutes while the custom image prepares the Team Fortress 2 Dedicated Server files under `C:/serverfiles`.
+The first start can take several minutes while the custom image prepares the Team Fortress 2 Dedicated Server files under `C:/serverfiles`. TF2's official setup notes that the SteamCMD update may need multiple runs before the install is complete, so the startup script retries before giving up.
 
 Recommended first checks:
 
-1. Confirm the GitHub Actions image build published the `232250-ltsc2022-r2` tag successfully.
+1. Confirm the GitHub Actions image build published the `232250-ltsc2022-r3` tag successfully.
 2. Confirm the GHCR package is public.
 3. Watch the Docker container log for Team Fortress 2 app `232250` install/update progress.
 4. Confirm `srcds.exe` exists under `\serverfiles` after installation.
