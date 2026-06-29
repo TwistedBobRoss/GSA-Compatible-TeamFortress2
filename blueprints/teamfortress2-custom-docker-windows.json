@@ -10,13 +10,16 @@
     },
     "image": {
       "name": "ghcr.io/twistedbobross/gsa-compatible-teamfortress2",
-      "tag": "232250-ltsc2022-r3"
+      "tag": "232250-ltsc2022-r4"
     },
     "automatic_ports": true,
     "envs": {
       "TF2_PORT": "{gameserver.game_port}",
       "TF2_MAXPLAYERS": "{gameserver.slot_limit}",
       "TF2_START_MAP": "{config_parameter id=\"start_map\"}",
+      "TF2_STEAM_GSLT": "{config_parameter id=\"steam_gslt\"}",
+      "TF2_SV_LAN": "{config_parameter id=\"sv_lan\"}",
+      "TF2_PUBLIC_IP": "{machine.ip}",
       "TF2_UPDATE_ON_START": "{config_parameter id=\"update_on_start\"}",
       "TF2_VALIDATE_ON_UPDATE": "{config_parameter id=\"validate_on_update\"}",
       "TF2_EXTRA_ARGS": "{config_parameter id=\"extra_args\"}"
