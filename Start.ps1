@@ -71,45 +71,61 @@ function Invoke-Tf2Update {
     }
 
     New-Item -ItemType Directory -Force -Path $InstallRoot | Out-Null
+    $srcds = Join-Path $InstallRoot "srcds.exe"
+    $steamCmdDir = Split-Path -Parent $SteamCmd
+    $steamScript = Join-Path $steamCmdDir "tf2_ds.txt"
 
-    $steamArgs = @(
-        "+force_install_dir", $InstallRoot,
-        "+login", "anonymous",
-        "+app_set_config", "232250", "mod", "tf",
-        "+app_update", "232250"
-    )
-
+    $appUpdateLine = "app_update 232250"
     if ($Validate) {
-        $steamArgs += "validate"
+        $appUpdateLine = "$appUpdateLine validate"
     }
 
-    $steamArgs += "+quit"
+    @(
+        "@ShutdownOnFailedCommand 1"
+        "@NoPromptForPassword 1"
+        "force_install_dir $InstallRoot"
+        "login anonymous"
+        $appUpdateLine
+        "quit"
+    ) | Set-Content -LiteralPath $steamScript -Encoding ASCII
 
     Write-Host "Running SteamCMD for Team Fortress 2 Dedicated Server app 232250."
+    Write-Host "SteamCMD script: $steamScript"
     if ($Validate) {
         Write-Host "SteamCMD validation is enabled for this run."
     }
 
-    $exitCode = $null
-    for ($attempt = 1; $attempt -le 2; $attempt++) {
-        & $SteamCmd @steamArgs
+    for ($attempt = 1; $attempt -le 4; $attempt++) {
+        Write-Host "SteamCMD install/update attempt $attempt of 4."
+        & $SteamCmd +runscript $steamScript
         $exitCode = $LASTEXITCODE
+
+        if ($exitCode -eq 0 -and (Test-Path -LiteralPath $srcds)) {
+            Write-Host "SteamCMD install/update completed and srcds.exe exists."
+            return
+        }
+
         if ($exitCode -eq 0) {
-            break
+            Write-Warning "SteamCMD reported success, but srcds.exe is not present yet at $srcds."
+        }
+        elseif ($exitCode -eq 7) {
+            Write-Warning "SteamCMD returned exit code 7, likely after a self-update."
+        }
+        else {
+            Write-Warning "SteamCMD app_update 232250 failed with exit code $exitCode."
         }
 
-        if ($exitCode -eq 7 -and $attempt -lt 2) {
-            Write-Warning "SteamCMD returned exit code 7, likely after a self-update. Retrying once."
-            Start-Sleep -Seconds 5
-            continue
+        if ($attempt -lt 4) {
+            Write-Host "Waiting before retrying SteamCMD."
+            Start-Sleep -Seconds 10
         }
-
-        break
     }
 
-    if ($exitCode -ne 0) {
-        throw "SteamCMD app_update 232250 failed with exit code $exitCode."
+    if (-not (Test-Path -LiteralPath $srcds)) {
+        throw "SteamCMD did not create TF2 srcds.exe after 4 attempts: $srcds"
     }
+
+    throw "SteamCMD app_update 232250 did not complete successfully after 4 attempts."
 }
 
 function Ensure-DefaultConfigFiles {
