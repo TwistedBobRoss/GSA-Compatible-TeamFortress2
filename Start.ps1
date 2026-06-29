@@ -164,6 +164,9 @@ $installRoot = Get-Setting "TF2_ROOT" "C:/serverfiles"
 $port = Get-Setting "TF2_PORT" "27015"
 $maxPlayers = Get-Setting "TF2_MAXPLAYERS" "24"
 $startMap = Get-Setting "TF2_START_MAP" "pl_upward"
+$steamGslt = Get-Setting "TF2_STEAM_GSLT" ""
+$svLan = Get-Setting "TF2_SV_LAN" "0"
+$publicIp = Get-Setting "TF2_PUBLIC_IP" ""
 $extraArgs = Get-Setting "TF2_EXTRA_ARGS" ""
 $updateOnStart = Get-BoolSetting "TF2_UPDATE_ON_START" $true
 $validateOnUpdate = Get-BoolSetting "TF2_VALIDATE_ON_UPDATE" $false
@@ -191,10 +194,24 @@ $launchArgs = @(
     "-usercon",
     "-strictportbind",
     "-condebug",
+    "-ip", "0.0.0.0",
     "-port", $port,
-    "+map", $startMap,
+    "+sv_lan", $svLan,
     "+maxplayers", $maxPlayers,
     "+exec", "server.cfg"
+)
+
+if (Test-UsableValue $publicIp) {
+    $launchArgs += @("+net_public_adr", $publicIp)
+}
+
+if (Test-UsableValue $steamGslt) {
+    $launchArgs += @("+sv_setsteamaccount", $steamGslt)
+}
+
+$launchArgs += @(
+    "+map", $startMap,
+    "+heartbeat"
 )
 
 $argumentLine = ($launchArgs | ForEach-Object { Quote-CommandArg $_ }) -join " "
@@ -209,6 +226,11 @@ Write-Host "Install root: $installRoot"
 Write-Host "Map: $startMap"
 Write-Host "Max players: $maxPlayers"
 Write-Host "Port: $port"
+Write-Host "LAN mode: $svLan"
+if (Test-UsableValue $publicIp) {
+    Write-Host "Public address hint: $publicIp"
+}
+Write-Host ("Steam GSLT configured: {0}" -f (Test-UsableValue $steamGslt))
 if (Test-UsableValue $extraArgs) {
     Write-Host "Extra args: $extraArgs"
 }
