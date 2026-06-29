@@ -9,7 +9,7 @@ blueprints/teamfortress2-custom-docker-windows.json
 The custom image is:
 
 ```text
-ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r3
+ghcr.io/twistedbobross/gsa-compatible-teamfortress2:232250-ltsc2022-r4
 ```
 
 The image follows the official TF2 dedicated-server SteamCMD flow for app `232250` and retries the install/update pass if SteamCMD self-updates or reports success before `srcds.exe` exists.
@@ -48,7 +48,7 @@ The first start can take several minutes while the custom image prepares the Tea
 
 Recommended first checks:
 
-1. Confirm the GitHub Actions image build published the `232250-ltsc2022-r3` tag successfully.
+1. Confirm the GitHub Actions image build published the `232250-ltsc2022-r4` tag successfully.
 2. Confirm the GHCR package is public.
 3. Watch the Docker container log for Team Fortress 2 app `232250` install/update progress.
 4. Confirm `srcds.exe` exists under `\serverfiles` after installation.
@@ -64,3 +64,13 @@ The image installs/updates app `232250` and launches SRCDS with:
 ```
 
 The custom Docker blueprint intentionally keeps install/start logic out of the GSA JSON. The GSA JSON points at the GHCR image and passes environment variables into `Start.ps1`.
+
+## Online Visibility
+
+The container passes these visibility-related values to SRCDS at launch:
+
+- `TF2_STEAM_GSLT` from `steam_gslt`, used with `+sv_setsteamaccount`.
+- `TF2_SV_LAN` from `sv_lan`, used with `+sv_lan`.
+- `TF2_PUBLIC_IP` from `{machine.ip}`, used with `+net_public_adr`.
+
+For public listing, use a valid TF2 Steam Game Server Login Token for App ID `440`, keep `sv_lan` set to `0`, leave the join password blank while testing, and confirm the machine's assigned UDP game port is reachable from the internet.
