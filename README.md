@@ -72,6 +72,19 @@ Slot limit = 24
 
 After the first successful install, you can set `Update On Start` to `0` for faster normal restarts. Turn it back on when you want SteamCMD to check for updates.
 
+### Player Slot Guidance
+
+This blueprint is intended to be a vanilla TF2 hosting blueprint.
+
+```text
+Recommended slots: 24
+Intended vanilla maximum: 32
+```
+
+TF2/SRCDS may show around `33` slots in some server-list views when the server is effectively using the normal 32-player vanilla range. Setting a higher slot limit in GSA does not automatically make vanilla TF2 behave like a 70-player server.
+
+Higher player counts require custom launch arguments, such as `-maxplayers_override`, plus server-owner tuning and acceptance of non-vanilla balance/performance tradeoffs. Those setups are intentionally left to individual server owners or forked blueprints.
+
 ## Updating An Existing Server
 
 Changing only an editable config file normally requires a server restart:
@@ -569,6 +582,9 @@ blueprints/teamfortress2-custom-docker-windows.json  GameServerApp blueprint
 Dockerfile                                           Windows image definition
 Start.ps1                                           SteamCMD and SRCDS startup wrapper
 docker-run.gsa-import.txt                           GSA Docker import seed
+assets/teamfortress2-gsa-marketplace-banner.png      Marketplace banner image
+assets/teamfortress2-gsa-marketplace-banner-under-1mb.jpg  Compressed marketplace upload image
+marketplace-description.md                           Marketplace listing copy
 docs/                                               Supporting operator notes
 .github/workflows/build-ghcr.yml                    Container build workflow
 ```
