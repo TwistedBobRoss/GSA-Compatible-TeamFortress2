@@ -26,7 +26,7 @@ Validate On Update = Off
 Extra Launch Arguments = blank
 ```
 
-For public listing, create a Steam Game Server Login Token for Team Fortress 2 App ID `440`, paste it into the GSLT field, and keep LAN Mode off.
+For public listing, create a Steam Game Server Login Token for Team Fortress 2 App ID `440`, paste it into the GSLT field, and keep LAN Mode off. Use one unique GSLT per running TF2 server; reusing the same token on multiple live servers can stop one or more servers from appearing in the public browser.
 
 ## Vanilla Slot Guidance
 
