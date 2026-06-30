@@ -70,6 +70,8 @@ Extra Launch Arguments = blank
 Slot limit = 24
 ```
 
+Use a different Steam Game Server Login Token for each running TF2 server. Reusing one token across multiple live servers can prevent one or more of them from appearing in the public server browser.
+
 After the first successful install, you can set `Update On Start` to `0` for faster normal restarts. Turn it back on when you want SteamCMD to check for updates.
 
 ### Player Slot Guidance
@@ -136,7 +138,7 @@ To appear in the TF2 server browser:
 
 - Create a Steam Game Server Login Token for Team Fortress 2 App ID `440`.
 - Paste the token into `Steam Game Server Login Token`.
-- Use one unique token per running public server.
+- Use one unique token per running public server. Do not reuse the same GSLT on multiple live TF2 servers.
 - Keep `LAN Mode` set to Off / `0`.
 - Leave `Join Password` blank while testing public listing.
 - Use a stock starting map such as `pl_upward`.
@@ -405,7 +407,7 @@ Clients need a way to download custom maps and required content. For public cust
 | Parameter | Default | Purpose |
 | --- | --- | --- |
 | GSA server name | GSA list name | Written to `hostname` in `server.cfg`. |
-| Steam Game Server Login Token | blank | Recommended for public listing. Create for App ID `440`. |
+| Steam Game Server Login Token | blank | Recommended for public listing. Create for App ID `440`. Use one unique token per running TF2 server. |
 | LAN Mode | `0` | `0` for internet servers, `1` for LAN-only servers. |
 | Join Password | blank | Sets `sv_password`; blank means public join access. |
 | Server Browser Tags | `community,vanilla` | Comma-separated tags for browser filtering. |
@@ -555,6 +557,7 @@ Then recreate or reinstall the server so the correct container image and launch 
 ### Server Is Not In The Public List
 
 - Confirm the GSLT was created for App ID `440`.
+- Confirm this server has its own unique GSLT. Do not reuse the same Steam server login token on another live TF2 server.
 - Confirm `LAN Mode` is `0`.
 - Leave `Join Password` blank while testing.
 - Confirm the UDP game port is reachable.
